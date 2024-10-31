@@ -42,9 +42,18 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($user->isadmin) {
+                return redirect()->intended('/admin');
+            }
             return redirect()->intended('/');
         }
 
-        return redirect('/login')->with('error', 'Invalid credentials. Please try again.');
+        return redirect('/login')->with('error', 'Sai thông tin đăng nhập, Hãy thử lại');
+    }
+    public function logout()
+    {
+        Auth::logout();
+        return redirect()->intended('/login');
     }
 }
