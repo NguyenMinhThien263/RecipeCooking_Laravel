@@ -16,7 +16,7 @@ class CreateTrixRichTextsTable extends Migration
         Schema::create('trix_rich_texts', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
             $table->string('field');
-            $table->morphs('recipe');
+            $table->morphs('model');
             $table->text('content')->nullable();
             $table->timestamps();
         });

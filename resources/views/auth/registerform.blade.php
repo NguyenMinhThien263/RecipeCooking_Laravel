@@ -1,4 +1,5 @@
 @extends('app')
+@section('title', 'Register')
 @section('content')
     <div class="login-form">
         <section class="vh-100" style="background-color: #eee;">

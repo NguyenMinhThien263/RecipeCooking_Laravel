@@ -1,8 +1,5 @@
-@extends('layouts.admin')
-@section('content')
-    {{-- <form method="POST" action="{{ route('posts.store') }}"> --}}
-    @csrf
-    @trix(\App\Post::class, 'content')
-    <input type="submit">
-    {{-- </form> --}}
-@endsection
+    <form method="POST" action="{{ route('recipe.store') }}">
+        @csrf
+        @trix(\App\Recipe::class, 'content')
+        <input type="submit">
+    </form>

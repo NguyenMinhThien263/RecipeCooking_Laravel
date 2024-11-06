@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
 {
@@ -27,7 +28,8 @@ class RecipeController extends Controller
     public function create()
     {
         //
-        return view('recipe.addform');
+        $user_id = Auth::check() ? Auth::user()->id : 0;
+        return $user_id == 0 ? redirect('/login') : view('admin.formaddrecipe', compact('user_id'));
     }
 
     /**

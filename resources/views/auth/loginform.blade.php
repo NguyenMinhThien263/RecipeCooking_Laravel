@@ -1,4 +1,5 @@
 @extends('app')
+@section('title', 'Login')
 @section('content')
     <div class="login-form">
         <section class="vh-100">

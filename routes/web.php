@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RecipeController;
 use PHPUnit\TextUI\XmlConfiguration\Group;
 
 /*
@@ -23,15 +25,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::group(['middleware' => ['auth']], function () {
     Route::group(['prefix' => 'admin', 'middleware' => ['auth.admin']], function () {
-        Route::get('/', function () {
-            return view('admin.dashboard');
-        });
-        Route::get('/user', function () {
-            // return view('admin.dashboard');
-        })->name('user');
-        Route::get('/recipe', function () {
-            // return view('admin.dashboard');
-        })->name('recipe');
+        Route::get('/', [AdminController::class, 'showUserDashBoard']);
+        Route::get('/user', [AdminController::class, 'showUserDashBoard'])->name('user');
+        Route::get('/recipe', [AdminController::class, 'showRecipeDashBoard'])->name('recipe');
+        Route::get('/add-recipe', [RecipeController::class, 'create'])->name('recipe.add');
+        Route::get('/edit-recipe/{id}/edit', [AdminController::class, 'showRecipeEditForm'])->name('recipe.edit');
     });
     Route::prefix('/')->group(function () {
         Route::get('/', function () {
