@@ -18,6 +18,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('description');
+            $table->string('image');
+            $table->longText('content');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->foreign('user_id')

@@ -29,7 +29,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/user', [AdminController::class, 'showUserDashBoard'])->name('user');
         Route::get('/recipe', [AdminController::class, 'showRecipeDashBoard'])->name('recipe');
         Route::get('/add-recipe', [RecipeController::class, 'create'])->name('recipe.add');
-        Route::get('/edit-recipe/{id}/edit', [AdminController::class, 'showRecipeEditForm'])->name('recipe.edit');
+        Route::post('/store-recipe', [RecipeController::class, 'store'])->name('recipe.store');
+        Route::get('/edit-recipe/{id}/edit', [RecipeController::class, 'edit'])->name('recipe.edit');
+        Route::put('/edit-recipe/{id}', [RecipeController::class, 'update'])->name('recipe.update');
+        Route::delete('/destroy-recipe/{id}', [RecipeController::class, 'destroy'])->name('recipe.delete');
     });
     Route::prefix('/')->group(function () {
         Route::get('/', function () {

@@ -1,6 +1,7 @@
 @extends('admin.dashboard')
+@section('title-content', 'Edit recipe')
 @section('data')
-    <form method="POST" action="{{ route('recipe.edit', $recipe->id) }}">
+    <form method="POST" action="{{ route('recipe.update', $recipe->id) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div>
@@ -8,6 +9,7 @@
             <div class="mt-8 border-t border-gray-200 pt-8">
 
                 <div class="">
+                    <input id="" name="user_id" value="{{ $user_id }}" hidden />
                     <div class="sm:col-span-3">
                         <label for="" class="block text-sm font-medium leading-5 text-gray-700">
                             Title
@@ -20,12 +22,28 @@
                     </div>
                     <div class="sm:col-span-3">
                         <label for="" class="block text-sm font-medium leading-5 text-gray-700">
+                            Banner Image
+                        </label>
+                        <div class="d-flex flex-row justify-content-start align-items-center">
+                            <div class="img_file w-15 px-2">
+                                <img id="img_preview" class="img-fluid" src="{{ asset($recipe->image) }}" accept="image/*"
+                                    alt="">
+                            </div>
+                            <div class="mt-1 rounded-md shadow-sm">
+                                <input type="file" id="image_file" name="image_file"
+                                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                    style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label for="" class="block text-sm font-medium leading-5 text-gray-700">
                             Description
                         </label>
                         <div class="mt-1 rounded-md shadow-sm">
-                            <textarea id="" name="title"
+                            <textarea id="" name="description"
                                 class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" cols=""
-                                rows="8" style="min-width: 100%" value="{{ $recipe->description }}"></textarea>
+                                rows="8" style="min-width: 100%">{{ $recipe->description }}</textarea>
                         </div>
                     </div>
                     <div class="sm:col-span-4">
@@ -33,8 +51,7 @@
                             Content
                         </label>
                         <div class="mt-1 rounded-md shadow-sm">
-                            {{-- @trix(\App\Recipe::class, 'content') --}}
-                            @trix($recipe, 'content')
+                            <textarea id="summernote" name="content_recipe">{{ $recipe->content }}</textarea>
                         </div>
                     </div>
 
@@ -45,10 +62,7 @@
         <div class="mt-8 border-t border-gray-200 pt-5">
             <div class="flex justify-end">
                 <span class="inline-flex rounded-md shadow-sm">
-                    <button type="button"
-                        class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
-                        Cancel
-                    </button>
+                    @include('component.cancelbutton')
                 </span>
                 <span class="ml-3 inline-flex rounded-md shadow-sm">
                     <button type="submit"

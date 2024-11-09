@@ -1,6 +1,7 @@
 @extends('admin.dashboard')
+@section('title-content', 'Add recipe')
 @section('data')
-    <form method="POST" action="{{ route('recipe.add') }}">
+    <form method="POST" action="{{ route('recipe.store') }}" enctype="multipart/form-data">
         @csrf
         <div>
 
@@ -20,6 +21,21 @@
                     </div>
                     <div class="sm:col-span-3">
                         <label for="" class="block text-sm font-medium leading-5 text-gray-700">
+                            Banner Image
+                        </label>
+                        <div class="d-flex flex-row justify-content-start align-items-center">
+                            <div class="img_file w-15 px-2">
+                                <img id="img_preview" class="img-fluid" src="" accept="image/*" alt="">
+                            </div>
+                            <div class="mt-1 rounded-md shadow-sm">
+                                <input type="file" id="image_file" name="image_file"
+                                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                                    style="min-width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label for="" class="block text-sm font-medium leading-5 text-gray-700">
                             Description
                         </label>
                         <div class="mt-1 rounded-md shadow-sm">
@@ -33,7 +49,8 @@
                             Content
                         </label>
                         <div class="mt-1 rounded-md shadow-sm">
-                            @trix(\App\Recipe::class, 'content')
+                            <textarea id="summernote" name="content_recipe">
+                                </textarea>
                         </div>
                     </div>
 
@@ -44,10 +61,7 @@
         <div class="mt-8 border-t border-gray-200 pt-5">
             <div class="flex justify-end">
                 <span class="inline-flex rounded-md shadow-sm">
-                    <button type="button"
-                        class="py-2 px-4 border border-gray-300 rounded-md text-sm leading-5 font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800 transition duration-150 ease-in-out">
-                        Cancel
-                    </button>
+                    @include('component.cancelbutton')
                 </span>
                 <span class="ml-3 inline-flex rounded-md shadow-sm">
                     <button type="submit"

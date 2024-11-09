@@ -26,3 +26,19 @@ window.addEventListener('DOMContentLoaded', event => {
         new simpleDatatables.DataTable(datatablesSimple);
     }
 });
+
+$(document).ready(function (e) {
+    $('#image_file').change(function () {
+
+        let reader = new FileReader();
+
+        reader.onload = (e) => {
+
+            $('#img_preview').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(this.files[0]);
+
+    });
+
+});

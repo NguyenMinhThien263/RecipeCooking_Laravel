@@ -44,10 +44,27 @@ class RecipeController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
+            'content_recipe' => 'required',
             'user_id' => 'required',
+            'image_file' => 'image',
         ]);
-        Recipe::created($request->all());
-        return redirect()->route('recipe.index')->with('msg', 'Recipe created success');
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '.' . $extension;
+            $path = 'uploads/banner/';
+            $file->move($path, $filename);
+        }
+        $content = $this->processDataContent($request->content_recipe);
+        // dd($content);
+        Recipe::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'user_id' => $request->user_id,
+            'image' => $path . $filename,
+            'content' =>  $content,
+        ]);
+        return redirect()->route('recipe')->with('msg', 'Recipe created success');
     }
 
     /**
@@ -72,8 +89,9 @@ class RecipeController extends Controller
     public function edit($id)
     {
         //
+        $user_id = Auth::check() ? Auth::user()->id : 0;
         $recipe = Recipe::find($id);
-        return view('recipe.editform', compact('recipe'));
+        return view('admin.formeditrecipe', compact('recipe', 'user_id'));
     }
 
     /**
@@ -86,17 +104,34 @@ class RecipeController extends Controller
     public function update(Request $request, $id)
     {
         //
+
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
+            'content_recipe' => 'required',
             'user_id' => 'required',
+            'image_file' => 'image',
         ]);
         $recipe = Recipe::findOrFail($id);
+        if ($recipe->image) {
+            $file = $request->file('image_file');
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '.' . $extension;
+            $path = 'uploads/banner/';
+            $file->move($path, $filename);
+        }
+        $content = $this->processDataContent($request->content_recipe);
         if (isset($recipe)) {
-            $recipe->update($request->all());
-            return redirect()->route('recipe.index')->with('msg', 'update recipe successfully');
+            $recipe->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'user_id' => $request->user_id,
+                'image' => $path . $filename,
+                'content' =>  $content,
+            ]);
+            return redirect()->route('recipe')->with('msg', 'update recipe successfully');
         } else {
-            return redirect()->route('recipe.index')->with('msg', 'update recipe failure');
+            return redirect()->route('recipe')->with('msg', 'update recipe failure');
         }
     }
 
@@ -111,10 +146,44 @@ class RecipeController extends Controller
         //
         $recipe = Recipe::findOrFail($id);
         if (isset($recipe)) {
+            $image_path = public_path($recipe->image);
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
             $recipe->delete();
-            return redirect()->route('recipe.index')->with('msg', 'delete recipe successfully');
+            return redirect()->route('recipe')->with('msg', 'delete recipe successfully');
         } else {
-            return redirect()->route('recipe.index')->with('msg', 'delete recipe failure');
+            return redirect()->route('recipe')->with('msg', 'delete recipe failure');
         }
+    }
+    // process data cotent
+    public function processDataContent($content)
+    {
+        $dom = new \DOMDocument();
+        // $contentType = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
+        $dom->loadHTML('<meta http-equiv="Content-Type" content="charset=utf-8" />' . $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $imageFile = $dom->getElementsByTagName('imageFile');
+        foreach ($imageFile as $item => $image) {
+            $data = $image->getAttribute('src');
+
+            list($type, $data) = explode(';', $data);
+
+            list(, $data)      = explode(',', $data);
+
+            $imgeData = base64_decode($data);
+
+            $image_name = "/upload/" . time() . $item . '.png';
+
+            $path = public_path() . $image_name;
+
+            file_put_contents($path, $imgeData);
+
+            $image->removeAttribute('src');
+
+            $image->setAttribute('src', $image_name);
+        }
+        $newcontent = $dom->saveXML();
+        // dd($dom, $newcontent);
+        return $newcontent;
     }
 }

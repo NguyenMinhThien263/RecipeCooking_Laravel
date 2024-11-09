@@ -1,41 +1,38 @@
 @extends('admin.dashboard')
+@section('title-content', 'Dashboard user')
 @section('data')
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            DataTable Example
+            DataTable User
         </div>
         <div class="card-body">
             <table id="datatablesSimple">
                 <thead>
                     <tr>
+                        <th>No.</th>
                         <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
+                        <th>Email</th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
+                        <th>No.</th>
                         <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
+                        <th>Email</th>
                     </tr>
                 </tfoot>
                 <tbody>
-                    <tr>
-                        <td>Tiger Nixon</td>
-                        <td>System Architect</td>
-                        <td>Edinburgh</td>
-                        <td>61</td>
-                        <td>2011/04/25</td>
-                        <td><button>asdasda</button></td>
-                    </tr>
+                    @php
+                        $count = 0;
+                    @endphp
+                    @foreach ($all_user as $user)
+                        <tr>
+                            <td>{{ ++$count }}</td>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
