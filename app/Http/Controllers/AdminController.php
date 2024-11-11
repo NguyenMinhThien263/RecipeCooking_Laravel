@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -12,7 +13,6 @@ class AdminController extends Controller
     public function showUserDashBoard()
     {
         $all_user = User::all();
-        // dd($all_user);
         return view('admin.listuser', compact('all_user'));
     }
     public function showRecipeDashBoard()
@@ -22,6 +22,7 @@ class AdminController extends Controller
     }
     public function showRecipeAddForm()
     {
+
         return view('admin.formaddrecipe');
     }
     public function showRecipeEditForm()

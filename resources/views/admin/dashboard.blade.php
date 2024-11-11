@@ -1,13 +1,15 @@
 @extends('app')
 @php
+    $is_admin = Auth::check() ? Auth::user()->isadmin : 0;
+    $user_name = Auth::check() ? Auth::user()->name : 'NewCommer';
     $side_navcontent = ['user' => 'user', 'recipe' => 'recipe'];
 @endphp
 @section('content')
 
     <body class="sb-nav-fixed">
-        @include('component.topNavigation')
+        @include('component.topNavigation', [$is_admin])
         <div id="layoutSidenav">
-            @include('component.sideNavigation', [$side_navcontent])
+            @include('component.sideNavigation', [$side_navcontent, $user_name])
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">

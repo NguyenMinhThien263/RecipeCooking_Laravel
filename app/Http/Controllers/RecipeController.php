@@ -28,8 +28,12 @@ class RecipeController extends Controller
     public function create()
     {
         //
-        $user_id = Auth::check() ? Auth::user()->id : 0;
-        return $user_id == 0 ? redirect('/login') : view('admin.formaddrecipe', compact('user_id'));
+        $usercheck = Auth::check();
+        $user_id = $usercheck ? Auth::user()->id : 0;
+        if ($user_id == 0) {
+            return redirect('/login');
+        }
+        return $usercheck && Auth::user()->isadmin ? view('admin.formaddrecipe', compact('user_id')) : view('clients.formaddrecipe', compact('user_id'));
     }
 
     /**
@@ -76,8 +80,12 @@ class RecipeController extends Controller
     public function show($id)
     {
         //
+        $path = explode("/", request()->path());
         $recipe = Recipe::find($id);
-        return view('recipe.show', compact('recipe'));
+        if (!isset($recipe->id)) {
+            return redirect()->route('/');
+        }
+        return view('clients.detailrecipe', compact('recipe'));
     }
 
     /**
@@ -113,7 +121,7 @@ class RecipeController extends Controller
             'image_file' => 'image',
         ]);
         $recipe = Recipe::findOrFail($id);
-        if ($recipe->image) {
+        if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
             $extension = $file->getClientOriginalExtension();
             $filename = time() . '.' . $extension;
@@ -122,13 +130,22 @@ class RecipeController extends Controller
         }
         $content = $this->processDataContent($request->content_recipe);
         if (isset($recipe)) {
-            $recipe->update([
-                'title' => $request->title,
-                'description' => $request->description,
-                'user_id' => $request->user_id,
-                'image' => $path . $filename,
-                'content' =>  $content,
-            ]);
+            if (!$request->hasFile('image_file')) {
+                $recipe->update([
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'user_id' => $request->user_id,
+                    'content' =>  $content,
+                ]);
+            } else {
+                $recipe->update([
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'user_id' => $request->user_id,
+                    'image' => $path . $filename,
+                    'content' =>  $content,
+                ]);
+            }
             return redirect()->route('recipe')->with('msg', 'update recipe successfully');
         } else {
             return redirect()->route('recipe')->with('msg', 'update recipe failure');
@@ -160,8 +177,10 @@ class RecipeController extends Controller
     public function processDataContent($content)
     {
         $dom = new \DOMDocument();
+        $previously = libxml_use_internal_errors(true);
         // $contentType = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">';
-        $dom->loadHTML('<meta http-equiv="Content-Type" content="charset=utf-8" />' . $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $dom->loadHTML('<meta http-equiv="Content-Type" content="charset=utf-8">' . $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $xmlErrors = libxml_get_errors();
         $imageFile = $dom->getElementsByTagName('imageFile');
         foreach ($imageFile as $item => $image) {
             $data = $image->getAttribute('src');
@@ -182,6 +201,9 @@ class RecipeController extends Controller
 
             $image->setAttribute('src', $image_name);
         }
+        unset($xmlErrors);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previously);
         $newcontent = $dom->saveXML();
         // dd($dom, $newcontent);
         return $newcontent;

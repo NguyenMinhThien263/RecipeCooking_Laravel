@@ -3,7 +3,9 @@
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\SearchController;
 use PHPUnit\TextUI\XmlConfiguration\Group;
 
 /*
@@ -34,15 +36,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/edit-recipe/{id}', [RecipeController::class, 'update'])->name('recipe.update');
         Route::delete('/destroy-recipe/{id}', [RecipeController::class, 'destroy'])->name('recipe.delete');
     });
-    Route::prefix('/')->group(function () {
-        Route::get('/', function () {
-            return view('clients.index');
-        });
-        Route::get('/danh-sach', function () {
-            // return view('admin.dashboard');
-        })->name('list');
-        Route::get('/tim-kiem', function () {
-            // return view('admin.dashboard');
-        })->name('search');
-    });
+});
+Route::prefix('/')->group(function () {
+    Route::get('/', [ClientController::class, 'dashboard'])->name('dashboard');
+    Route::get('/recipe', [ClientController::class, 'dashboard'])->name('list');
+    Route::get('/tim-kiem', [ClientController::class, 'dashboard'])->name('search');
+    Route::get('/chi-tiet/{id}/{title}', [RecipeController::class, 'show'])->name('client.detail');
+    Route::get('/add-recipe', [RecipeController::class, 'create'])->name('client.add');
+    Route::post('/store-recipe', [RecipeController::class, 'store'])->name('client.store');
+    Route::get('/edit-recipe/{id}/edit', [RecipeController::class, 'edit'])->name('client.edit');
+    Route::put('/edit-recipe/{id}', [RecipeController::class, 'update'])->name('client.update');
 });
